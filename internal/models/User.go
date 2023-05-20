@@ -29,36 +29,50 @@ type User struct {
   Address     string      `json:"address"`
 }
 
+// Validate method validates the fields of the User struct using the struct tags defined for each field.
+// The method takes a pointer to a User struct and another pointer to a User struct as input.
+// The input struct is used to get the reflect.Value and reflect.Type of the fields to be validated.
+// The method returns a map containing the names of the invalid fields and the corresponding error messages.
+// If there are no invalid fields, the method returns an empty map.
 func (user *User) Validate(u *User) map[string][]string {
-  invalidFields := make(map[string][]string)
-  userType := reflect.TypeOf(*u)
-  userValue := reflect.ValueOf(*u)
-  var wg sync.WaitGroup
-  wg.Add(userType.NumField())
+    invalidFields := make(map[string][]string)
 
-  for i := 0; i < userType.NumField(); i++ {
-    go func(i int){
-      defer wg.Done()
-      field := userType.Field(i)
-      tags := field.Tag.Get("validate")
-      fieldValue := userValue.Field(i)
-      if tags != "" {
-        var invalid []string
-        for _, tag := range strings.Split((field.Tag.Get("validate")), ","){
-          err := utils.ValidateThisTag(tag, fieldValue)
-          if err != "" {
-            invalid = append(invalid, err)
-          }
-        }
-        if len(invalid) > 0 {
-          invalidFields[field.Name] = invalid
-        }
-      }
-    }(i)
-  }
-  wg.Wait()
+    // Get the reflect.Type and reflect.Value of the input struct using the pointer
+    userType := reflect.TypeOf(*u)
+    userValue := reflect.ValueOf(*u)
 
-  return invalidFields
+    var wg sync.WaitGroup
+    wg.Add(userType.NumField())
+
+    // Iterate through each field in the struct and validate if a "validate" tag is present
+    for i := 0; i < userType.NumField(); i++ {
+        go func(i int){
+            defer wg.Done()
+
+            // Get the field, tag and value of the current field
+            field := userType.Field(i)
+            tags := field.Tag.Get("validate")
+            fieldValue := userValue.Field(i)
+
+            // If a validate tag is present, validate the field against each tag
+            if tags != "" {
+                var invalid []string
+                for _, tag := range strings.Split((field.Tag.Get("validate")), ","){
+                    err := utils.ValidateThisTag(tag, fieldValue)
+                    if err != "" {
+                        invalid = append(invalid, err)
+                    }
+                }
+                // If there are any invalid fields, add them to the invalidFields map
+                if len(invalid) > 0 {
+                    invalidFields[field.Name] = invalid
+                }
+            }
+        }(i)
+    }
+    wg.Wait()
+
+    return invalidFields
 }
 
 
