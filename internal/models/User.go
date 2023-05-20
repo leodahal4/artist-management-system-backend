@@ -1,7 +1,13 @@
 package models
 
 import (
+	"reflect"
+	"strings"
+	"sync"
 	"time"
+
+	"github.com/leodahal4/artist-management-system-backend/internal/config"
+	"github.com/leodahal4/artist-management-system-backend/utils"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -17,11 +23,44 @@ type User struct {
   // email will be used as unique together with deleted_at, and phone
   Email       string      `json:"email" gorm:"index:user_email,unique" validate:"email,required"`
   Password    string      `json:"passsord" validate:"required"`
-  Phone       string      `json:"phone" gorm:"index:user_email,unique" validate:"required,min=10,max=13"`
+  Phone       string      `json:"phone" gorm:"index:user_email,unique" validate:"required,min=10,max=13,number"`
   Dob         time.Time   `json:"dob"`
-  Gender      Gender      `json:"gender" validate:"string,gender" gorm:"type:gender"`
+  Gender      config.Gender      `json:"gender" validate:"string,gender" gorm:"type:gender"`
   Address     string      `json:"address"`
 }
+
+func (user *User) Validate(u *User) map[string][]string {
+  invalidFields := make(map[string][]string)
+  userType := reflect.TypeOf(*u)
+  userValue := reflect.ValueOf(*u)
+  var wg sync.WaitGroup
+  wg.Add(userType.NumField())
+
+  for i := 0; i < userType.NumField(); i++ {
+    go func(i int){
+      defer wg.Done()
+      field := userType.Field(i)
+      tags := field.Tag.Get("validate")
+      fieldValue := userValue.Field(i)
+      if tags != "" {
+        var invalid []string
+        for _, tag := range strings.Split((field.Tag.Get("validate")), ","){
+          err := utils.ValidateThisTag(tag, fieldValue)
+          if err != "" {
+            invalid = append(invalid, err)
+          }
+        }
+        if len(invalid) > 0 {
+          invalidFields[field.Name] = invalid
+        }
+      }
+    }(i)
+  }
+  wg.Wait()
+
+  return invalidFields
+}
+
 
 // BeforeCreate
 //

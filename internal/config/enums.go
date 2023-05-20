@@ -1,4 +1,4 @@
-package models
+package config
 
 // Gender is a custom type representing the gender of a user.
 type Gender string

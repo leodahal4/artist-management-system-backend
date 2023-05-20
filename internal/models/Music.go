@@ -1,6 +1,9 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/leodahal4/artist-management-system-backend/internal/config"
+)
 
 // The Music type represents a piece of music.
 type Music struct {
@@ -10,9 +13,9 @@ type Music struct {
 	ArtistID uuid.UUID `json:"artist_id"`
 	Artist Artist
 
-	Title string `json:"title"`
-	AlbumName string `json:"album_name"`
+  Title string `json:"title" validate:"string"`
+  AlbumName string `json:"album_name" validate:"string"`
 
 	// Genre is the genre of the music.
-	Genre Genre `json:"genre" validate:"string,genre" gorm:"type:genre"`
+	Genre config.Genre `json:"genre" validate:"string,genre" gorm:"type:genre"`
 }
