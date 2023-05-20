@@ -66,8 +66,17 @@ Open the .env file and update the configuration values according to your
 environment. This may include database connection details, API keys, or any
 other necessary settings.
 
+4. Migrate the models
+
+    For this you can run the migrations.go file which is present inside the cli folder,
+
+```bash
+go run cmd/cli/migrations.go
+```
+
 4. CREATE the enums on the database
-   For this you can run the file which is present inside the cli folder,
+
+    For this you can run the file which is present inside the cli folder,
 
 ```bash
 go run cmd/cli/enums.go
@@ -76,13 +85,18 @@ go run cmd/cli/enums.go
 5. Start the server
 
 Option 1: Run the pre-built binary (for Linux):
+
 Inside the project folder, you can find a binary file,
 Run the binary file, residing on the project root folder
 
 Option 2: Build and run using Go:
+
 Ensure you have Go (Golang) installed on your system.
 
 Execute the following command to run the project:
-`bash go run cmd/app/main.go `
+
+```bash
+go run cmd/app/main.go
+```
 
 The Artist-Management-System-Backend should now be up and running on your local machine.
