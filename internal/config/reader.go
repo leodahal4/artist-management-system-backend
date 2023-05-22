@@ -20,6 +20,7 @@ func Read_config() (Config, error) {
   var pgDBName string
   var debugEnv string
   var debug bool
+  var serverPort string
 
   err := godotenv.Load(".env")
   if err != nil {
@@ -38,6 +39,10 @@ func Read_config() (Config, error) {
   if pgPort = os.Getenv("pg_port"); pgPort == "" {
     // if not found then, return error
     pgPort = "5432"
+  }
+  if serverPort = os.Getenv("port"); serverPort == "" {
+    // if not found then, return error
+    serverPort = "8080"
   }
 
   // check if the debug variable is found
@@ -76,6 +81,7 @@ func Read_config() (Config, error) {
     PgPass: pgPass,
     PgDBName: pgDBName,
     Debug: debug,
+    ServerPort: serverPort,
   }, nil
 }
 

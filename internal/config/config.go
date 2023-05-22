@@ -16,6 +16,7 @@ type Config struct {
   PgDBName string
 
   Debug bool // if not found this will be set to false if on prod and true if on development
+  ServerPort string
 }
 
 // Is_prod returns true if the server is in production environment.
