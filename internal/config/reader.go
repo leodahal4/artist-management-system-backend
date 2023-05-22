@@ -52,7 +52,7 @@ func Read_config() (*Config, error) {
     // if not found then, return error
     srvPort = "8080"
   }
-  if pEntropyEnv = os.Getenv("port"); pEntropyEnv == "" {
+  if pEntropyEnv = os.Getenv("pass_entropy"); pEntropyEnv == "" {
     // if not found then, return error
     pEntropyEnv = "100"
   }

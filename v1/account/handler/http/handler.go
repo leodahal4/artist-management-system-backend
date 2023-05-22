@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/leodahal4/artist-management-system-backend/internal/config"
 	"github.com/leodahal4/artist-management-system-backend/internal/interfaces"
 	"github.com/leodahal4/artist-management-system-backend/internal/models"
 	"github.com/leodahal4/artist-management-system-backend/utils"
@@ -38,8 +39,14 @@ func RegisterationHandler(useCase interfaces.AccountUseCase) fiber.Handler {
         return c.Status(http.StatusBadRequest).JSON(errors)
       }
     }
+    
+    res, err := useCase.NewUser(&req)
+    if err != nil {
+      newError := config.ErrorResponse{Err: err}
+      return c.Status(http.StatusBadRequest).JSON(newError.Errors())
+    }
 
     c.Status(http.StatusOK)
-    return c.JSON("OK")
+    return c.JSON(res)
   }
 }
