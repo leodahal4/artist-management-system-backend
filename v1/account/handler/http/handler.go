@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/leodahal4/artist-management-system-backend/internal/interfaces"
 	"github.com/leodahal4/artist-management-system-backend/internal/models"
+	"github.com/leodahal4/artist-management-system-backend/utils"
 )
 
 func AccountRoutes(app fiber.Router, useCase interfaces.AccountUseCase) {
@@ -24,9 +25,18 @@ func RegisterationHandler(useCase interfaces.AccountUseCase) fiber.Handler {
 
     fmt.Printf("req: %v\n", req)
 
+    // check if all the validation gets passed
     errors := req.Validate(&req)
     if len(errors) > 0 {
       return c.JSON(errors)
+    } else {
+      // check if the password is acceptable
+      err := utils.CheckPasswordStrength(req.Password)
+      if err != nil {
+        errors := make(map[string][]string, 1)
+        errors["password"] = []string{err.Error()}
+        return c.Status(http.StatusBadRequest).JSON(errors)
+      }
     }
 
     c.Status(http.StatusOK)
