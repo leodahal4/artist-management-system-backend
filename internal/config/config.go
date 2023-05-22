@@ -16,7 +16,10 @@ type Config struct {
   PgDBName string
 
   Debug bool // if not found this will be set to false if on prod and true if on development
-  ServerPort string
+  SrvPort string
+
+  // security related variables
+  PassEntropy float64
 }
 
 // Is_prod returns true if the server is in production environment.
@@ -26,5 +29,9 @@ func (c *Config) Is_prod() bool {
   } else{
     return false
   }
+}
+
+func GetConfig() *Config {
+  return config
 }
 

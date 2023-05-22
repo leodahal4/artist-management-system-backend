@@ -31,9 +31,9 @@ func main() {
     log.Fatalf("Cannot read the .env file.\nERR: %s", err.Error())
   }
 
-  newServer.config = &config
+  newServer.config = config
   // initialize the db
-  newServer.dB = internal.DbConnect(&config)
+  newServer.dB = internal.DbConnect(config)
 
   newServer.app = fiber.New()
 
@@ -45,5 +45,5 @@ func main() {
   auseCase := accountUseCase.New(accountRepo.NewRepo(newServer.dB), newServer.redisClient)
   accountHandler.AccountRoutes(authRoute, auseCase)
   
-  log.Fatal(newServer.app.Listen(fmt.Sprintf(":%v", config.ServerPort)))
+  log.Fatal(newServer.app.Listen(fmt.Sprintf(":%v", config.SrvPort)))
 }
