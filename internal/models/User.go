@@ -22,7 +22,7 @@ type User struct {
 
   // email will be used as unique together with deleted_at, and phone
   Email       string      `json:"email" gorm:"index:user_email,unique" validate:"email,required"`
-  Password    string      `json:"passsord" validate:"required"`
+  Password    string      `json:"password" validate:"required"`
   Phone       string      `json:"phone" gorm:"index:user_email,unique" validate:"required,min=10,max=13,number"`
   Dob         time.Time   `json:"dob"`
   Gender      config.Gender      `json:"gender" validate:"string,gender" gorm:"type:gender"`
@@ -74,7 +74,6 @@ func (user *User) Validate(u *User) map[string][]string {
 
     return invalidFields
 }
-
 
 // BeforeCreate
 //
